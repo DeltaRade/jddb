@@ -1,0 +1,12 @@
+{
+  "name": "jddb",
+  "version": "1.0.0",
+  "description": "document based database that stores data as json",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
