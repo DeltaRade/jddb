@@ -21,39 +21,39 @@ class Database {
 	 */
 	select(selector) {
 		//return new SyncQuery(() => {
-			const data = decompress(fs.readFileSync(this._path));
-			/**
-			 * @type {Array<*>}
-			 */
-			const docs = JSON.parse(data.toString());
-			/**
-			 * @type {number}
-			 */
-			let selectedIndex;
-			let selected = [];
-			for (let i in docs) {
-				// if (selector(docs[i])) {
-				// 	selectedIndex = +i;
-				// 	break;
-				// }
-				if (selector(docs[i])) {
-					selected.push(docs[i]);
-				}
+		const data = decompress(fs.readFileSync(this._path));
+		/**
+		 * @type {Array<*>}
+		 */
+		const docs = JSON.parse(data.toString());
+		/**
+		 * @type {number}
+		 */
+		let selectedIndex;
+		let selected = [];
+		for (let i in docs) {
+			// if (selector(docs[i])) {
+			// 	selectedIndex = +i;
+			// 	break;
+			// }
+			if (selector(docs[i])) {
+				selected.push(docs[i]);
 			}
-			let obj = docs[selectedIndex];
-			return selected;
+		}
+		let obj = docs[selectedIndex];
+		return selected;
 		//});
 	}
 	insert(data) {
 		//return new SyncQuery(() => {
-			const fdata = decompress(fs.readFileSync(this._path));
-			/**
-			 * @type {Array<*>}
-			 */
-			const docs = JSON.parse(fdata.toString());
-			docs.push(data);
-			let cdata = compress(JSON.stringify(docs));
-			fs.writeFileSync(this._path, cdata);
+		const fdata = decompress(fs.readFileSync(this._path));
+		/**
+		 * @type {Array<*>}
+		 */
+		const docs = JSON.parse(fdata.toString());
+		docs.push(data);
+		let cdata = compress(JSON.stringify(docs));
+		fs.writeFileSync(this._path, cdata);
 		//});
 	}
 	/**
@@ -63,29 +63,29 @@ class Database {
 	 */
 	modify(selector, newValue) {
 		//return new SyncQuery(() => {
-			const data = decompress(fs.readFileSync(this._path));
-			/**
-			 * @type {Array<*>}
-			 */
-			const docs = JSON.parse(data.toString());
-			// /**
-			//  * @type {{[key:string]:any}}
-			//  */
-			// let selected;
-			/**
-			 * @type {number}
-			 */
-			let selectedIndex;
-			for (let i in docs) {
-				if (selector(docs[i])) {
-					//selected = docs[i];
-					selectedIndex = +i;
-					break;
-				}
+		const data = decompress(fs.readFileSync(this._path));
+		/**
+		 * @type {Array<*>}
+		 */
+		const docs = JSON.parse(data.toString());
+		// /**
+		//  * @type {{[key:string]:any}}
+		//  */
+		// let selected;
+		/**
+		 * @type {number}
+		 */
+		let selectedIndex;
+		for (let i in docs) {
+			if (selector(docs[i])) {
+				//selected = docs[i];
+				selectedIndex = +i;
+				break;
 			}
-			docs[selectedIndex] = newValue;
-			let cdata = compress(JSON.stringify(docs));
-			fs.writeFileSync(this._path, cdata);
+		}
+		docs[selectedIndex] = newValue;
+		let cdata = compress(JSON.stringify(docs));
+		fs.writeFileSync(this._path, cdata);
 		//});
 	}
 	/**
@@ -94,24 +94,24 @@ class Database {
 	 */
 	delete(selector) {
 		//return new SyncQuery(() => {
-			const data = compress(fs.readFileSync(this._path));
-			/**
-			 * @type {Array<{[key:string]:any}>}
-			 */
-			const docs = JSON.parse(data.toString());
-			/**
-			 * @type {number}
-			 */
-			let selectedIndex;
-			for (let i in docs) {
-				if (selector(docs[i])) {
-					selectedIndex = +i;
-					break;
-				}
+		const data = compress(fs.readFileSync(this._path));
+		/**
+		 * @type {Array<{[key:string]:any}>}
+		 */
+		const docs = JSON.parse(data.toString());
+		/**
+		 * @type {number}
+		 */
+		let selectedIndex;
+		for (let i in docs) {
+			if (selector(docs[i])) {
+				selectedIndex = +i;
+				break;
 			}
-			docs.splice(selectedIndex, 1);
-			let cdata = compress(JSON.stringify(docs));
-			fs.writeFileSync(this._path, cdata);
+		}
+		docs.splice(selectedIndex, 1);
+		let cdata = compress(JSON.stringify(docs));
+		fs.writeFileSync(this._path, cdata);
 		//});
 	}
 	/**
@@ -400,10 +400,26 @@ class AsyncDatabase {
 					let exists = false;
 					let modifyIndex = 0;
 					for (let i in documents) {
-						if (objectPropNamesEqual(documents[i], data.insert)) {
-							exists = true;
-							modifyIndex = +i;
-							break;
+						if (
+							documents[i] instanceof Object &&
+							data.insert instanceof Object
+						) {
+							let obj = documents[i];
+							for (let prop in obj) {
+								//if (objectPropNamesEqual(documents[i], data.insert)) {
+								if (obj[prop] == data.insert[prop]) {
+									exists = true;
+									modifyIndex = +i;
+									break;
+								}
+							}
+							//}
+						} else {
+							if (documents[i] === data.insert) {
+								exists = true;
+								modifyIndex = +i;
+								break;
+							}
 						}
 					}
 					if (exists) {
