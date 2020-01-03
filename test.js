@@ -1,6 +1,6 @@
 const db = require('./index');
-const x = new db.async.Database('./jddb/test.json');
-const xr = new db.Database('./jddb/testsync.json');
+const x = new db.async.Database('./test.json');
+const xr = new db.Database('./testsync.json');
 async function dbQuery() {
 	await x.insert({
 		id: '123',
@@ -15,8 +15,10 @@ async function dbQuery() {
 //dbQuery();
 
 function syncQuery() {
-	xr.insert({ id: '123', name: 'john' }).run();
-	let val = xr.select((obj) => obj.id == '123').run();
-	console.log(val);
+	xr.insert({ id: '123', name: 'john' });
+	let val = xr.select((obj) => obj.id == '123');
+	xr.query({ insert: { a: 1, b: 2 }, modify: { a: 1, b: 8, c: 3 } }).run();
+	let value2 = xr.select((x) => x.a === 1);
+	console.log(value2);
 }
 syncQuery();
