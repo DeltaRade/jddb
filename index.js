@@ -155,10 +155,23 @@ class Database {
 					let exists = false;
 					let modifyIndex = 0;
 					for (let i in docs) {
-						if (objectPropNamesEqual(docs[i], data.insert)) {
-							exists = true;
-							modifyIndex = +i;
-							break;
+						if (docs[i] instanceof Object && data.insert instanceof Object) {
+							let obj = docs[i];
+							for (let prop in obj) {
+								//if (objectPropNamesEqual(docs[i], data.insert)) {
+								if (obj[prop] == data.insert[prop]) {
+									exists = true;
+									modifyIndex = +i;
+									break;
+								}
+							}
+							//}
+						} else {
+							if (docs[i] === data.insert) {
+								exists = true;
+								modifyIndex = +i;
+								break;
+							}
 						}
 					}
 					if (exists) {
